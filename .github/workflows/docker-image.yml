@@ -1,0 +1,37 @@
+name: Release Docker Image
+on:
+  push:
+    branches: [ ethermeta-master ]
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Python Version'
+        required: false
+        default: '3.10'
+
+env:
+  ORG: ghcr.io/ethermeta-org
+  TS_VERSION: ${{ github.event.inputs.version || secrets.RELEASE_VERSION || '3.10' }}
+jobs:
+  odoo-docker:
+
+    name: odoo-${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [3.8, 3.9, 3.10]
+        odoo_version: [14.0, 15.0, 16.0]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to github Registry
+        run: echo ${{ secrets.TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and odoo image
+        run: | 
+            docker build --build-args PYTHON_VERSION=${{ matrix.python }} ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }}-${{ matrix.python }}
+            docker push ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }}-${{ matrix.python }}
+        working-directory: ${{ matrix.odoo_version }}

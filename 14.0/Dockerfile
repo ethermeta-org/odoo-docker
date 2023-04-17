@@ -1,10 +1,12 @@
-FROM debian:buster-slim
+FROM python:${PYTHON_VERSION}-slim-buster
 MAINTAINER Odoo S.A. <info@odoo.com>
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
 # Generate locale C.UTF-8 for postgres and general locale data
 ENV LANG C.UTF-8
+
+LABEL org.opencontainers.image.source=https://github.com/ethermeta-org/odoo-docker
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN apt-get update && \
