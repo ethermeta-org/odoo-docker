@@ -8,6 +8,7 @@ ENV LANG C.UTF-8
 
 # Retrieve the target architecture to install the correct wkhtmltopdf package
 ARG TARGETARCH
+LABEL org.opencontainers.image.source=https://github.com/ethermeta-org/odoo-docker
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN apt-get update && \

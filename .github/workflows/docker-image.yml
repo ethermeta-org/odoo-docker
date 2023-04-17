@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [3.8, 3.9, 3.10]
+        python: ['3.8', '3.9', '3.10']
         odoo_version: ['14.0', '15.0', '16.0']
 
     steps:
@@ -32,6 +32,6 @@ jobs:
 
       - name: Build and odoo image
         run: | 
-            docker build --build-arg PYTHON_VERSION=${{ matrix.python }} --tag ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }}-${{ matrix.python }} .
+            docker build --no-cache --build-arg PYTHON_VERSION=${{ matrix.python }} --tag ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }}-${{ matrix.python }} .
             docker push ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }}-${{ matrix.python }}
         working-directory: ${{ matrix.odoo_version }}
