@@ -16,13 +16,13 @@ env:
 jobs:
   odoo-docker:
 
-    name: odoo-${{ matrix.python }}
+    name: odoo-${{ matrix.python }}-${{ matrix.odoo_version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python: [3.8, 3.9, 3.10]
-        odoo_version: [14.0, 15.0, 16.0]
+        odoo_version: ['14.0', '15.0', '16.0']
 
     steps:
       - uses: actions/checkout@v3
