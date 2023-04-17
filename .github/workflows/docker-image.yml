@@ -32,6 +32,6 @@ jobs:
 
       - name: Build and odoo image
         run: | 
-            docker build --build-arg PYTHON_VERSION=${{ matrix.python }} ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }}-${{ matrix.python }}
+            docker build --build-arg PYTHON_VERSION=${{ matrix.python }} --tag ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }}-${{ matrix.python }} .
             docker push ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }}-${{ matrix.python }}
         working-directory: ${{ matrix.odoo_version }}
