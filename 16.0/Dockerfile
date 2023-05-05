@@ -1,6 +1,6 @@
 ARG PYTHON_VERSION '3.9'
 
-FROM python:${PYTHON_VERSION}-slim-bullseye
+FROM debian:bullseye-slim
 MAINTAINER Odoo S.A. <info@odoo.com>
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
