@@ -12,16 +12,14 @@ on:
 
 env:
   ORG: ghcr.io/ethermeta-org
-  TS_VERSION: ${{ github.event.inputs.version || secrets.RELEASE_VERSION || '3.10' }}
 jobs:
   odoo-docker:
 
-    name: odoo-${{ matrix.python }}-${{ matrix.odoo_version }}
+    name: odoo-${{ matrix.odoo_version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.8', '3.9', '3.10']
         odoo_version: ['14.0', '15.0', '16.0']
 
     steps:
@@ -32,6 +30,6 @@ jobs:
 
       - name: Build and odoo image
         run: | 
-            docker build --no-cache --build-arg PYTHON_VERSION=${{ matrix.python }} --tag ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }}-${{ matrix.python }} .
-            docker push ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }}-${{ matrix.python }}
+            docker build --no-cache --tag ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }} --no-cache=true .
+            docker push ghcr.io/ethermeta-org/odoo-docker:${{ matrix.odoo_version }}
         working-directory: ${{ matrix.odoo_version }}
