@@ -1,6 +1,31 @@
 ARG PYTHON_VERSION '3.9'
 
-FROM debian:buster-slim
+FROM debian:bullseye-slim AS builder
+
+ARG PHANTOM_JS_VERSION
+
+# https://bitbucket.org/ariya/phantomjs/downloads/
+ENV PHANTOM_JS_VERSION ${PHANTOM_JS_VERSION:-2.1.1-linux-x86_64}
+
+# Install runtime dependencies
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        bzip2 \
+        libfontconfig \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN set -x  \
+    # Install official PhantomJS release
+ && mkdir /tmp/phantomjs \
+ && curl -Ls https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-${PHANTOM_JS_VERSION}.tar.bz2 \
+        | tar -xj --strip-components=1 -C /tmp/phantomjs \
+ && mv /tmp/phantomjs/bin/phantomjs /usr/local/bin
+
+
+FROM debian:bullseye-slim
 MAINTAINER Odoo S.A. <info@odoo.com>
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
@@ -9,6 +34,8 @@ SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 ENV LANG C.UTF-8
 
 LABEL org.opencontainers.image.source=https://github.com/ethermeta-org/odoo-docker
+
+COPY --from=builder /usr/local/bin/phantomjs /usr/bin
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN apt-get update && \
@@ -35,13 +62,15 @@ RUN apt-get update && \
         python3-xlrd \
         python3-xlwt \
         xz-utils \
-    && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
-    && echo 'ea8277df4297afc507c61122f3c349af142f31e5 wkhtmltox.deb' | sha1sum -c - \
+    && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bullseye_amd64.deb \
+    && echo '9df8dd7b1e99782f1cfa19aca665969bbd9cc159 wkhtmltox.deb' | sha1sum -c - \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 
+ENV OPENSSL_CONF=/etc/ssl/
+
 # install latest postgresql-client
-RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ bullseye-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
     && GNUPGHOME="$(mktemp -d)" \
     && export GNUPGHOME \
     && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
@@ -59,8 +88,8 @@ RUN npm install -g rtlcss
 
 # Install Odoo
 ENV ODOO_VERSION 14.0
-ARG ODOO_RELEASE=20231106
-ARG ODOO_SHA=a50db3bf2d55c64bd51b6b56a2e3d0dbafc44894
+ARG ODOO_RELEASE=20231205
+ARG ODOO_SHA=fb96a16cb2959b903112c9d138da06051544f448
 RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
     && echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
     && apt-get update \
