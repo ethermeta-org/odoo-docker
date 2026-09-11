@@ -31,3 +31,5 @@ The full readme is generated over in [docker-library/docs](https://github.com/do
 <!-- Security scan triggered at 2026-09-08 02:14:23 -->
 
 <!-- Security scan triggered at 2026-09-10 04:09:27 -->
+
+<!-- Security scan triggered at 2026-09-11 07:27:09 -->
